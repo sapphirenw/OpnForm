@@ -1,6 +1,7 @@
 version: '3'
 
 networks:
+  opnform-net:
   caddy_network:
     external: true
 
@@ -20,6 +21,8 @@ services:
     - ./api/.env
     volumes:
     - opnform_storage:/usr/share/nginx/html/storage:rw
+    networks:
+      - opnform-net
 
   api-worker:
     image: jhumanj/opnform-api:latest
@@ -31,14 +34,20 @@ services:
     - ./api/.env
     volumes:
     - opnform_storage:/usr/share/nginx/html/storage:rw
+    networks:
+      - opnform-net
 
   ui:
     image: jhumanj/opnform-client:latest
     env_file: 
     - ./client/.env
+    networks:
+      - opnform-net
 
   redis:
     image: redis:7
+    networks:
+      - opnform-net
 
   db:
     image: postgres:16
@@ -48,6 +57,8 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-forge}
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    networks:
+      - opnform-net
 
   forms-ingress:
     image: nginx:1
@@ -55,6 +66,7 @@ services:
       - ./docker/nginx.conf:/etc/nginx/templates/default.conf.template
     networks:
       - caddy_network
+      - opnform-net
 
 volumes:
   postgres-data:
