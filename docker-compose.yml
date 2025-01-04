@@ -1,4 +1,9 @@
----
+version: '3'
+
+networks:
+  caddy_network:
+    external: true
+
 services:
   api: &api
     image: jhumanj/opnform-api:latest
@@ -44,12 +49,12 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
-  ingress:
+  forms-ingress:
     image: nginx:1
     volumes:
       - ./docker/nginx.conf:/etc/nginx/templates/default.conf.template
-    ports:
-      - 80:80
+    networks:
+      - caddy_network
 
 volumes:
   postgres-data:
